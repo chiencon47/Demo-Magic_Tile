@@ -5,6 +5,8 @@ using System.IO;
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 
 
@@ -59,5 +61,23 @@ public class LoadData : MonoBehaviour
 #if UNITY_EDITOR
         AssetDatabase.Refresh(); // Cập nhật để thấy file trong Project
 #endif
+    }
+
+    public void LoadLevelData(AssetReference reference)
+    {
+        Addressables.LoadAssetAsync<TextAsset>(reference).Completed += OnLoadDone;
+    }
+
+    private void OnLoadDone(AsyncOperationHandle<TextAsset> obj)
+    {
+        if (obj.Status == AsyncOperationStatus.Succeeded)
+        {
+            string levelJson = obj.Result.text;
+            
+        }
+        else
+        {
+            Debug.LogError($"Failed to load level ");
+        }
     }
 }

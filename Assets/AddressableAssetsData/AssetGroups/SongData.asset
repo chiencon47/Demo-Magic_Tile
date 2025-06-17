@@ -12,11 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
   m_Name: SongData
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
+  m_GroupName: SongData
   m_Data:
     m_SerializedData: []
   m_GUID: da0592cb484747d43b439dc821b92951
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 8b34e185724bc074693319c29bb6e691
+    m_Address: Assets/Data/Believer_ImagineDragons.json
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ee2328b54b990ba4c8d9e47dd0e85f89, type: 2}
   m_SchemaSet:
