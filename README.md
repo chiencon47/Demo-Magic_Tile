@@ -16,7 +16,6 @@
   - 🟢 Perfect (±0.2s): +3 points  
   - 🟡 Great (±0.4s): +2 points  
   - 🔴 Good: +1 point
-  - Combo xN: bonus N point
 - **Game Over**: Occurs when any tile is missed and hits the bottom of the screen.
 
 ---
