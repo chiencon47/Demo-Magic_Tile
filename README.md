@@ -2,9 +2,8 @@
 
 1. Open Unity Hub.  
 2. Click "Add project" → navigate to the project folder.  
-3. Open with **Unity 2022.3.40 LTS**.  
-4. Go to `Assets/Scenes` and open `SampleScene`.  
-5. Press `Play` to start experiencing the gameplay.
+3. Go to `Assets/Scenes` and open `SampleScene`.  
+4. Press `Play` to start experiencing the gameplay.
 
 ---
 
