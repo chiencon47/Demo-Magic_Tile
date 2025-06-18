@@ -13,9 +13,10 @@
 - **Notes fall in sync with music**: Tiles are generated and fall according to the music timing.
 - **Player interaction**: Tap/click at the right time to score points.
 - **Scoring based on timing accuracy**:
-  - 🟢 Perfect (±0.9s): +3 points  
-  - 🟡 Great (±1.1s): +2 points  
-  - 🔴 Good: +1 point  
+  - 🟢 Perfect (±0.2s): +3 points  
+  - 🟡 Great (±0.4s): +2 points  
+  - 🔴 Good: +1 point
+  - Combo xN: bonus N point
 - **Game Over**: Occurs when any tile is missed and hits the bottom of the screen.
 
 ---
