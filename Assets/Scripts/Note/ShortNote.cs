@@ -43,6 +43,8 @@ public class ShortNote : Note
         spriteRenderer.enabled = true;
         fill.transform.localScale = Vector3.one;
         boder.transform.localScale = Vector3.one;
+        boder.DOFade(1, 0f);
+        fill.DOFade(1, 0f);
     }
     private void CalculateScore()
     {

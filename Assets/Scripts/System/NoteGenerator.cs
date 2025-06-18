@@ -8,8 +8,15 @@ public class NoteGenerator : MonoBehaviour
     [SerializeField] private Note shortNote;
     [SerializeField] private Note longNote;
     [SerializeField] private Note startNote;
+
     private float laneWidth;
-    private Vector3[] lanePositions; 
+    private Vector3[] lanePositions;
+
+    private float speed;
+    private float offset;
+
+    private Queue<NoteSpawnInfo> noteQueue = new Queue<NoteSpawnInfo>();
+    private Transform noteParent;
 
     private void Awake()
     {
@@ -23,7 +30,6 @@ public class NoteGenerator : MonoBehaviour
         float screenWidth = screenHeight * Camera.main.aspect;
 
         lanePositions = new Vector3[4];
-
         laneWidth = screenWidth / 4f;
         float startX = -screenWidth / 2f + laneWidth / 2f;
 
@@ -31,21 +37,26 @@ public class NoteGenerator : MonoBehaviour
         {
             lanePositions[i] = new Vector3(startX + i * laneWidth, 0f, 0f);
         }
+
         UpdateSizeNote(startNote.transform);
         UpdateSizeNote(shortNote.transform);
         UpdateSizeNote(longNote.transform);
     }
 
-    float[] lastNoteTimes = new float[4]; 
-    float minSpacing = 0.5f;
-    public void Generator(SongData data, Transform noteParent)
+    public void Prepare(SongData data, Transform parent)
     {
-        float offset = GameManager.Instance.timeOffset;
-        float speed = GameManager.Instance.speed;
-        Note newStartNote = Instantiate(startNote, noteParent);
-        Vector3 positon = lanePositions[Random.Range(0, 4)];
-        positon.y = -3;
-        newStartNote.transform.localPosition = positon;
+        speed = GameManager.Instance.speed;
+        offset = GameManager.Instance.timeOffset;
+        noteParent = parent;
+
+        float[] lastNoteTimes = new float[4];
+        float minSpacing = 0.5f;
+
+        // Spawn 1 start note
+        Note start = Instantiate(startNote, noteParent);
+        Vector3 pos = lanePositions[Random.Range(0, 4)];
+        pos.y = -3f;
+        start.transform.localPosition = pos;
 
         foreach (var key in data.keys)
         {
@@ -56,59 +67,74 @@ public class NoteGenerator : MonoBehaviour
 
             float noteTime = key.time + offset;
 
+            // Chọn lane không trùng thời gian
             List<int> availableLanes = new List<int>();
             for (int i = 0; i < 4; i++)
             {
                 if (Mathf.Abs(noteTime - lastNoteTimes[i]) >= minSpacing)
-                {
                     availableLanes.Add(i);
-                }
             }
 
-            int lane;
-
-            if (availableLanes.Count == 0)
-            {
-                lane = Random.Range(0, 4);
-            }
-            else
-            {
-                lane = availableLanes[Random.Range(0, availableLanes.Count)];
-            }
+            int lane = (availableLanes.Count == 0)
+                ? Random.Range(0, 4)
+                : availableLanes[Random.Range(0, availableLanes.Count)];
 
             lastNoteTimes[lane] = noteTime;
 
-            Note noteInstance = Instantiate(prefab, noteParent);
-            noteInstance.SetData(key);
-            Vector3 pos = lanePositions[lane];
-            pos.y = noteTime * speed;
-            noteInstance.transform.localPosition = pos;
+            NoteSpawnInfo info = new NoteSpawnInfo
+            {
+                prefab = prefab,
+                laneIndex = lane,
+                time = noteTime,
+                data = key
+            };
+
+            noteQueue.Enqueue(info);
         }
     }
 
+    private float preSpawnTime = 5f; 
+
+    private void Update()
+    {
+        if (!GameManager.Instance.IsPlaying()) return;
+
+        float currentTime = GameManager.Instance.GetTimeSong();
+
+        while (noteQueue.Count > 0 && noteQueue.Peek().time <= currentTime + preSpawnTime)
+        {
+            SpawnNote(noteQueue.Dequeue());
+        }
+    }
+
+    private void SpawnNote(NoteSpawnInfo info)
+    {
+        Note note = SimpleObjectPool.Instance.GetObjectFromPool(info.prefab, noteParent);
+        Vector3 pos = lanePositions[info.laneIndex];
+        pos.y = info.time * speed;
+        note.transform.localPosition = pos;
+        note.SetData(info.data);
+    }
 
     private void UpdateSizeNote(Transform note)
     {
         if (note == null) return;
 
         BoxCollider2D box = note.GetComponent<BoxCollider2D>();
-        if (box == null)
-        {
-            return;
-        }
+        if (box == null) return;
 
         float worldWidth = box.size.x * note.lossyScale.x;
-
-        if (worldWidth <= 0f)
-        {
-            return;
-        }
+        if (worldWidth <= 0f) return;
 
         float scaleFactor = laneWidth / worldWidth;
-
         note.localScale *= scaleFactor;
     }
 
-
+    private class NoteSpawnInfo
+    {
+        public Note prefab;
+        public int laneIndex;
+        public float time;
+        public SongKeyEvent data;
+    }
 }
-

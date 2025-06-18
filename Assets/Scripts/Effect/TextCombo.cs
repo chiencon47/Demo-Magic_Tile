@@ -22,4 +22,9 @@ public class TextCombo : MonoBehaviour
             });
         });
     }
+    private void OnDisable()
+    {
+        DOTween.Kill(txtCombo);
+        DOTween.Kill(txtCombo.transform);
+    }
 }

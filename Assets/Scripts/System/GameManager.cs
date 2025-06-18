@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     private bool isPlay = false;
     private float visualTime = 0f;
     private int score = 0;
+    private int maxScore;
     private void Awake()
     {
         Instance = this;
@@ -29,14 +30,26 @@ public class GameManager : MonoBehaviour
         LoadLevelData(songData);
     }
 
+    public bool IsPlaying()
+    {
+        return isPlay;
+    }
 
+    public void SetMaxScore(int maxScore)
+    {
+        this.maxScore = maxScore;
+    }
     private void Update()
     {
         if (isPlay == false) return;
         float targetTime = audioSource.timeSamples / (float)audioSource.clip.frequency;
         visualTime = Mathf.Lerp(visualTime, targetTime, Time.deltaTime * 30f);
-
         noteParent.transform.position = Vector3.down * visualTime * speed;
+
+        if (!audioSource.isPlaying && audioSource.time >= audioSource.clip.length - 0.5f)
+        {
+            GameOver();
+        }
     }
 
     public void PlayeGame()
@@ -60,7 +73,7 @@ public class GameManager : MonoBehaviour
         {
             string levelJson = obj.Result.text;
             SongData data = JsonUtility.FromJson<SongData>(levelJson);
-            NoteGenerator.Instance.Generator(data, noteParent);
+            NoteGenerator.Instance.Prepare(data, noteParent);
         }
         else
         {
@@ -82,4 +95,12 @@ public class GameManager : MonoBehaviour
             textScore.transform.DOScale(1f, 0.1f);
         });
     }
+
+    public void GameOver()
+    {
+        PopupManager.Instance.ShowPopupGameOver();
+        audioSource.Pause();
+        isPlay = false;
+    }
+
 }

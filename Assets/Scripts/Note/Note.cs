@@ -25,4 +25,6 @@ public abstract class Note : MonoBehaviour
     {
         isClick = false;
     }
+
+    public bool IsClick => isClick;
 }
