@@ -48,14 +48,14 @@ public class ShortNote : Note
     }
     private void CalculateScore()
     {
-        float timingOffset = Mathf.Abs(GameManager.Instance.GetTimeSong() - songKeyEvent.time);
+        float timingOffset = Mathf.Abs((GameManager.Instance.GetTimeSong() -1) - songKeyEvent.time);
         Debug.Log(timingOffset);
-        if (timingOffset <= 0.9f)
+        if (timingOffset <= 0.2f)
         {
             GameManager.Instance.AddScore(3);
             EffectManager.Instance.SpawnEffectPerfect();
         }
-        else if (timingOffset <= 1.1f)
+        else if (timingOffset <= 0.4f)
         {
             GameManager.Instance.AddScore(2);
             EffectManager.Instance.SpawnEffectGreat();
