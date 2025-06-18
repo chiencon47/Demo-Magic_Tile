@@ -21,12 +21,17 @@ public class TouchManager : MonoBehaviour
                         LongNote longNote = hit.GetComponent<LongNote>();
                         if (longNote != null)
                         {
+                            longNote.SetTouchWorldPos(worldPos);
                             longNote.OnNoteTouched();
                             activeLongNotes[touch.fingerId] = longNote;
                         }
                         else
                         {
-                            hit.SendMessage("OnNoteTouched", SendMessageOptions.DontRequireReceiver);
+                            var shortNote = hit.GetComponent<Note>();
+                            if (shortNote != null)
+                            {
+                                shortNote.OnNoteTouched();
+                            }
                         }
                     }
                     break;
@@ -52,12 +57,17 @@ public class TouchManager : MonoBehaviour
                 LongNote longNote = hit.GetComponent<LongNote>();
                 if (longNote != null)
                 {
+                    longNote.SetTouchWorldPos(worldPos);
                     longNote.OnNoteTouched();
-                    activeLongNotes[-1] = longNote; 
+                    activeLongNotes[-1] = longNote;
                 }
                 else
                 {
-                    hit.SendMessage("OnNoteTouched", SendMessageOptions.DontRequireReceiver);
+                    var shortNote = hit.GetComponent<Note>();
+                    if (shortNote != null)
+                    {
+                        shortNote.OnNoteTouched();
+                    }
                 }
             }
         }

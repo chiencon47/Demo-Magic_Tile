@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using TMPro;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,8 +15,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AssetReference songData;
     [SerializeField] private Transform noteParent;
     [SerializeField] private AudioSource audioSource;
+    [SerializeField] private TextMeshProUGUI textScore;
     private bool isPlay = false;
     private float visualTime = 0f;
+    private int score = 0;
     private void Awake()
     {
         Instance = this;
@@ -37,7 +42,11 @@ public class GameManager : MonoBehaviour
     public void PlayeGame()
     {
         isPlay = true;
-        audioSource.Play();
+        DOVirtual.DelayedCall(timeOffset, () =>
+        {
+            audioSource.Play();
+
+        });
     }
 
     public void LoadLevelData(AssetReference reference)
@@ -57,5 +66,20 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError($"Failed to load level ");
         }
+    }
+
+    public float GetTimeSong()
+    {
+        return visualTime;
+    }
+
+    public void AddScore(int amount)
+    {
+        score += amount;
+        textScore.text = score.ToString();
+        textScore.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack).OnComplete(() =>
+        {
+            textScore.transform.DOScale(1f, 0.1f);
+        });
     }
 }

@@ -8,7 +8,7 @@ public class NoteGenerator : MonoBehaviour
     [SerializeField] private Note shortNote;
     [SerializeField] private Note longNote;
     [SerializeField] private Note startNote;
-
+    private float laneWidth;
     private Vector3[] lanePositions; 
 
     private void Awake()
@@ -24,13 +24,16 @@ public class NoteGenerator : MonoBehaviour
 
         lanePositions = new Vector3[4];
 
-        float laneWidth = screenWidth / 4f;
+        laneWidth = screenWidth / 4f;
         float startX = -screenWidth / 2f + laneWidth / 2f;
 
         for (int i = 0; i < 4; i++)
         {
             lanePositions[i] = new Vector3(startX + i * laneWidth, 0f, 0f);
         }
+        UpdateSizeNote(startNote.transform);
+        UpdateSizeNote(shortNote.transform);
+        UpdateSizeNote(longNote.transform);
     }
 
     float[] lastNoteTimes = new float[4]; 
@@ -76,11 +79,36 @@ public class NoteGenerator : MonoBehaviour
             lastNoteTimes[lane] = noteTime;
 
             Note noteInstance = Instantiate(prefab, noteParent);
-
+            noteInstance.SetData(key);
             Vector3 pos = lanePositions[lane];
             pos.y = noteTime * speed;
             noteInstance.transform.localPosition = pos;
         }
     }
+
+
+    private void UpdateSizeNote(Transform note)
+    {
+        if (note == null) return;
+
+        BoxCollider2D box = note.GetComponent<BoxCollider2D>();
+        if (box == null)
+        {
+            return;
+        }
+
+        float worldWidth = box.size.x * note.lossyScale.x;
+
+        if (worldWidth <= 0f)
+        {
+            return;
+        }
+
+        float scaleFactor = laneWidth / worldWidth;
+
+        note.localScale *= scaleFactor;
+    }
+
+
 }
 
